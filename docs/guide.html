@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ports | guide</title>
+    <style>
+      :root {
+        --bg: #000000;
+        --panel: #0b0b0b;
+        --panel-strong: #111111;
+        --panel-soft: #151515;
+        --ink: #ffffff;
+        --muted: #ffd84d;
+        --line: #ffffff;
+        --accent: #00ffff;
+        --accent-soft: rgba(0, 255, 255, 0.14);
+        --danger: #ff4d4f;
+        --shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top right, rgba(0, 255, 255, 0.12), transparent 28%),
+          radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.08), transparent 24%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      code,
+      pre {
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+      }
+
+      .page {
+        width: min(1120px, calc(100vw - 2rem));
+        margin: 0 auto;
+        padding: 1.5rem 0 2.5rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 1rem;
+        align-items: start;
+        margin-bottom: 1rem;
+      }
+
+      .hero > * {
+        min-width: 0;
+      }
+
+      .panel,
+      .tui-window,
+      .command-card,
+      .sheet section {
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+        box-shadow: var(--shadow);
+      }
+
+      .panel {
+        padding: 1.5rem;
+      }
+
+      .eyebrow {
+        margin: 0 0 0.5rem;
+        color: var(--accent);
+        font-size: 0.82rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      ul {
+        margin-top: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+      }
+
+      h1 {
+        margin-bottom: 0.8rem;
+        font-size: clamp(2.6rem, 6vw, 4.8rem);
+        line-height: 0.95;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.24);
+      }
+
+      h2 {
+        margin-bottom: 0.7rem;
+        font-size: 1.35rem;
+      }
+
+      h3 {
+        margin-bottom: 0.45rem;
+        font-size: 1rem;
+      }
+
+      .lede,
+      .muted,
+      .shortcut-grid span,
+      .command-card p,
+      .stack-grid p,
+      .sheet p,
+      .panel li {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1.2rem;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--panel-soft);
+        color: var(--ink);
+        padding: 0.35rem 0.7rem;
+        white-space: nowrap;
+      }
+
+      .tui-window {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 100%;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .tui-header,
+      .tui-footer,
+      .tui-shortcuts {
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+        font-size: 0.82rem;
+      }
+
+      .tui-header,
+      .tui-footer {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tui-header {
+        color: var(--accent);
+      }
+
+      .tui-body {
+        position: relative;
+        padding: 1rem;
+        overflow: hidden;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+        font-size: 0.8rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.42rem 0.3rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .table th {
+        color: var(--ink);
+      }
+
+      .table td {
+        color: var(--muted);
+      }
+
+      .table .port {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .table .alert {
+        color: var(--danger);
+        font-weight: 700;
+      }
+
+      .toast {
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: 19rem;
+        padding: 0.7rem 0.9rem;
+        border: 1px solid var(--line);
+        background: #000000;
+        color: var(--ink);
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+        font-size: 0.82rem;
+        box-shadow: var(--shadow);
+      }
+
+      .tui-footer {
+        border-top: 1px solid var(--line);
+        border-bottom: 0;
+        color: var(--muted);
+      }
+
+      .tui-shortcuts {
+        padding: 0.55rem 1rem 0.9rem;
+        color: var(--muted);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .sheet section {
+        padding: 1.35rem;
+      }
+
+      .stack-grid,
+      .command-grid,
+      .shortcut-grid,
+      .workflow-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .stack-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .command-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .shortcut-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .command-card,
+      .stack-grid article,
+      .shortcut-grid div {
+        border: 1px solid var(--line);
+        background: var(--panel-soft);
+        padding: 1rem;
+      }
+
+      .shortcut-grid strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--accent);
+        font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+      }
+
+      .workflow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .workflow-grid pre {
+        margin: 0;
+        padding: 1rem;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        background: #050505;
+        color: var(--ink);
+      }
+
+      .inline-code {
+        display: inline-block;
+        padding: 0.08rem 0.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: var(--panel-soft);
+      }
+
+      @media (max-width: 920px) {
+        .hero,
+        .stack-grid,
+        .command-grid,
+        .shortcut-grid,
+        .workflow-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .panel,
+        .sheet section {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="panel">
+          <p class="eyebrow">Developer Utility</p>
+          <h1>ports</h1>
+          <p class="lede">
+            A local-first CLI for seeing what is actually listening on your
+            machine, where it came from, and what to do next without bouncing
+            between <span class="inline-code">lsof</span>,
+            <span class="inline-code">ss</span>, terminals, and guesswork.
+          </p>
+          <div class="chip-row">
+            <span class="chip">ports</span>
+            <span class="chip">ports ls</span>
+            <span class="chip">ports check 3000</span>
+            <span class="chip">ports kill 3000</span>
+          </div>
+        </div>
+
+        <section class="tui-window" aria-label="TUI preview">
+          <div class="tui-header">
+            ports  live listener monitor  rows: 3  sort: port  interval: 3s
+          </div>
+          <div class="tui-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Port</th>
+                  <th>Dir</th>
+                  <th>Framework</th>
+                  <th>Lang</th>
+                  <th>PID</th>
+                  <th>Mem</th>
+                  <th>Uptime</th>
+                  <th>Command</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="port">3000</td>
+                  <td>app</td>
+                  <td>Vite</td>
+                  <td>JavaScript</td>
+                  <td>9281</td>
+                  <td>84MB</td>
+                  <td>12m</td>
+                  <td>node dev-server</td>
+                </tr>
+                <tr>
+                  <td class="port">5432</td>
+                  <td>------</td>
+                  <td>------</td>
+                  <td>------</td>
+                  <td>2201</td>
+                  <td>41MB</td>
+                  <td>4h 8m</td>
+                  <td>postgres</td>
+                </tr>
+                <tr>
+                  <td class="port">8083</td>
+                  <td>live-chat</td>
+                  <td>------</td>
+                  <td>TypeScript</td>
+                  <td>26852</td>
+                  <td class="alert">612MB</td>
+                  <td>7h 48m</td>
+                  <td>docker:live-chat-app</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="toast">New listener: 1234 nc (pid 233828)</div>
+          </div>
+          <div class="tui-footer">Refreshed 3 rows. [tcp 127.0.0.1:3000 JavaScript]</div>
+          <div class="tui-shortcuts">Enter details  / filter  g jump  s sort  r refresh  q quit</div>
+        </section>
+      </section>
+
+      <section class="sheet">
+        <section>
+          <h2>What it shows</h2>
+          <p>
+            <span class="inline-code">ports</span> is built for the workflow
+            where the machine is clearly listening, but the raw socket tools do
+            not tell you enough to act confidently. It resolves the owning
+            process, working directory, runtime hints, framework/language guess,
+            memory, uptime, and command summary in one pass.
+          </p>
+          <p>
+            When a field cannot be resolved, it renders as
+            <span class="inline-code">------</span> so the table shape stays
+            stable and easy to scan.
+          </p>
+        </section>
+
+        <section>
+          <h2>Stack</h2>
+          <div class="stack-grid">
+            <article>
+              <h3>Runtime</h3>
+              <p>Rust, clap, ratatui, crossterm, owo-colors</p>
+            </article>
+            <article>
+              <h3>Discovery</h3>
+              <p>`listeners` first, `lsof` fallback on Unix, host-level fallback when needed</p>
+            </article>
+            <article>
+              <h3>Enrichment</h3>
+              <p>sysinfo metadata, cwd lookup, memory, uptime, framework and language inference</p>
+            </article>
+          </div>
+        </section>
+
+        <section>
+          <h2>Commands</h2>
+          <div class="command-grid">
+            <article class="command-card">
+              <h3><code>ports</code></h3>
+              <p>Open the live TUI with auto-refresh and interactive shortcuts.</p>
+            </article>
+            <article class="command-card">
+              <h3><code>ports ls</code></h3>
+              <p>Print a static table of all listening ports.</p>
+            </article>
+            <article class="command-card">
+              <h3><code>ports check 3000</code></h3>
+              <p>Show a detailed view for one port, or say that it is free.</p>
+            </article>
+            <article class="command-card">
+              <h3><code>ports kill 3000</code></h3>
+              <p>Terminate every process listening on that port. Graceful first, then force.</p>
+            </article>
+            <article class="command-card">
+              <h3><code>ports --json ls</code></h3>
+              <p>Emit machine-readable output for automation and scripts.</p>
+            </article>
+            <article class="command-card">
+              <h3><code>ports help kill</code></h3>
+              <p>Show focused help for one command or switch.</p>
+            </article>
+          </div>
+        </section>
+
+        <section>
+          <h2>TUI shortcuts</h2>
+          <div class="shortcut-grid">
+            <div><strong>Arrows</strong><span>Move selection</span></div>
+            <div><strong>Enter</strong><span>Toggle details</span></div>
+            <div><strong>/</strong><span>Filter rows</span></div>
+            <div><strong>g</strong><span>Jump to a port</span></div>
+            <div><strong>s</strong><span>Cycle sort mode</span></div>
+            <div><strong>r</strong><span>Refresh now</span></div>
+            <div><strong>k</strong><span>Kill selected port</span></div>
+            <div><strong>b</strong><span>Open localhost in a browser</span></div>
+            <div><strong>o</strong><span>Open the working directory</span></div>
+            <div><strong>x</strong><span>Show a curl snippet</span></div>
+            <div><strong>p</strong><span>Toggle footer protocol details</span></div>
+            <div><strong>h</strong><span>Toggle the shortcuts overlay</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Detection rules</h2>
+          <p>
+            <span class="inline-code">ports</span> uses deterministic heuristics
+            rather than opaque guessing. It inspects command lines, executable
+            names, and nearby project markers such as
+            <span class="inline-code">package.json</span>,
+            <span class="inline-code">Cargo.toml</span>,
+            <span class="inline-code">pyproject.toml</span>,
+            <span class="inline-code">Gemfile</span>,
+            <span class="inline-code">go.mod</span>, and framework config files
+            like <span class="inline-code">next.config.*</span> or
+            <span class="inline-code">vite.config.*</span>.
+          </p>
+          <p>
+            On Linux, Docker, and containerd-backed environments, the tool also
+            enriches fallback listeners when the runtime exposes enough metadata
+            to tie the socket back to a process or published service.
+          </p>
+        </section>
+
+        <section>
+          <h2>Common workflows</h2>
+          <div class="workflow-grid">
+            <pre><code># What is using port 3000?
+ports check 3000</code></pre>
+            <pre><code># Show everything listening right now
+ports ls</code></pre>
+            <pre><code># Kill a stuck dev server
+ports kill 5173</code></pre>
+            <pre><code># Open the live monitor
+ports --interval 5</code></pre>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
